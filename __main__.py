@@ -2,9 +2,6 @@ from populationmanager import PopulationManager
 import pandas as pd
 import random
 
-SEED = random.randint(0, 999999999)
-print("SEED:", SEED)
-random.seed(SEED)
 
 def generate_random_rates():
     terror_pressure_pE = random.uniform(0.0002, 0.0002)
@@ -28,17 +25,22 @@ def generate_random_rates():
     )
 
 
-t_max = 1000
+SEED = random.randint(0, 999999999)
+print("SEED:", SEED)
+random.seed(SEED)
+
+T_MAX = 1000
 
 k = 1
-brasil = PopulationManager(total_population=208846892)
+model = PopulationManager(total_population=208846892)
+
 data = []
 
-for key, value in brasil.previous.items():
+for key, value in model.previous.items():
     data.append({"type": key, "population": value, "t": 0})
-print(brasil.previous)
+print(model.previous)
 
-for t in range(t_max):
+for t in range(T_MAX):
     (
         terror_pressure_pE,
         terror_pressure_pA,
@@ -49,8 +51,8 @@ for t in range(t_max):
         immigration_rate,
         emigration_rate,
     ) = generate_random_rates()
-    
-    brasil.evolve(
+
+    model.evolve(
         alpha_1=terror_pressure_pE,
         alpha_2=terror_pressure_pA,
         beta_1=violent_acts_vp,
@@ -62,11 +64,11 @@ for t in range(t_max):
         k=k,
     )
 
-    for key, value in brasil.previous.items():
+    for key, value in model.previous.items():
         data.append({"type": key, "population": value, "t": t + 1})
 
 
-print(brasil.previous)
+print(model.previous)
 
 df = pd.DataFrame(data, columns=["type", "population", "t"])
 
